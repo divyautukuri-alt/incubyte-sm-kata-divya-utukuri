@@ -173,9 +173,9 @@ RSpec.describe "Api::V1::Employees API", type: :request do
         subject
         expect(json['employee_id']).to eq(india_employee.id)
         expect(json['full_name']).to eq('Raj Kumar')
-        expect(json['gross_salary']).to eq(100000.0)
-        expect(json['deduction']).to eq(10000.0)
-        expect(json['net_salary']).to eq(90000.0)
+        expect(json['gross_salary'].to_f).to eq(100000.0)
+        expect(json['deduction'].to_f).to eq(10000.0)
+        expect(json['net_salary'].to_f).to eq(90000.0)
         expect(json['country']).to eq('India')
       end
 

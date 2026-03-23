@@ -19,6 +19,7 @@ class SalaryCalculator
       full_name: @employee.full_name,
       gross_salary: @employee.salary.to_f,
       deduction: deduction_amount,
+      net_salary: net_salary,
       deduction_percentage: deduction_percentage,
       country: @employee.country
     }
@@ -27,10 +28,14 @@ class SalaryCalculator
   private
 
   def deduction_percentage
-    TAX_RATES[@employee.country]
+    TAX_RATES[@employee.country] || 0
   end
 
   def deduction_amount
-    (@employee.salary * deduction_percentage / 100.0)
+    (@employee.salary * deduction_percentage / 100.0).round(2)
+  end
+
+  def net_salary
+    (@employee.salary - deduction_amount).round(2)
   end
 end
