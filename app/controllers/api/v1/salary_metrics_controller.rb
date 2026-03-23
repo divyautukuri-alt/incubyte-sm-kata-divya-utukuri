@@ -7,6 +7,11 @@ module Api
 
         employees = Employee.where('LOWER(country) = ?', country_param.downcase)
 
+        if employees.empty?
+          render json: { error: "No employees found for country: #{country_param}" }, status: :not_found
+          return
+        end
+
         # Get the actual country name from the first employee (preserves case)
         actual_country = employees.first.country
 
