@@ -163,6 +163,43 @@ RSpec.describe "Api::V1::Employees API", type: :request do
     end
   end
 
+  describe 'GET /api/v1/employees/:id/calculate_salary' do
+    let!(:india_employee) { create(:employee, full_name: 'Raj Kumar', country: 'India', salary: 100000) }
+
+    context 'when employee exists' do
+      subject { get "/api/v1/employees/#{india_employee.id}/calculate_salary" }
+
+      it 'returns salary calculation' do
+        subject
+        expect(json['employee_id']).to eq(india_employee.id)
+        expect(json['full_name']).to eq('Raj Kumar')
+        expect(json['gross_salary']).to eq(100000.0)
+        expect(json['deduction']).to eq(10000.0)
+        expect(json['net_salary']).to eq(90000.0)
+        expect(json['country']).to eq('India')
+      end
+
+      it 'returns status code 200' do
+        subject
+        expect(response).to have_http_status(200)
+      end
+    end
+
+    context 'when employee does not exist' do
+      subject { get "/api/v1/employees/999999/calculate_salary" }
+
+      it 'returns status code 404' do
+        subject
+        expect(response).to have_http_status(404)
+      end
+
+      it 'returns error message' do
+        subject
+        expect(json['error']).to match(/Couldn't find Employee/)
+      end
+    end
+  end
+
   # Helper method to parse JSON response
   def json
     JSON.parse(response.body)
