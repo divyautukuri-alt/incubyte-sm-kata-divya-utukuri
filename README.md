@@ -104,55 +104,60 @@ rails server
 
 #### Create Employee
 ```
-POST /employees
+POST /api/v1/employees
 Content-Type: application/json
 
 {
-  "full_name": "John Doe",
-  "job_title": "Software Engineer",
-  "country": "India",
-  "salary": 100000
+  "employee": {
+    "full_name": "John Doe",
+    "job_title": "Software Engineer",
+    "country": "India",
+    "salary": 100000
+  }
 }
 ```
 
 #### Get All Employees
 ```
-GET /employees
+GET /api/v1/employees
 ```
 
 #### Get Single Employee
 ```
-GET /employees/:id
+GET /api/v1/employees/:id
 ```
 
 #### Update Employee
 ```
-PUT /employees/:id
+PUT /api/v1/employees/:id
 Content-Type: application/json
 
 {
-  "salary": 120000
+  "employee": {
+    "salary": 120000
+  }
 }
 ```
 
 #### Delete Employee
 ```
-DELETE /employees/:id
+DELETE /api/v1/employees/:id
 ```
 
 ### Salary Calculation
 
 #### Calculate Net Salary
 ```
-GET /employees/:id/calculate_salary
+GET /api/v1/employees/:id/calculate_salary
 
 Response:
 {
   "employee_id": 1,
   "full_name": "John Doe",
-  "gross_salary": 100000,
-  "deduction": 10000,
-  "net_salary": 90000,
+  "gross_salary": 100000.0,
+  "deduction": 10000.0,
+  "net_salary": 90000.0,
+  "deduction_percentage": 10,
   "country": "India"
 }
 ```
@@ -161,28 +166,30 @@ Response:
 
 #### Get Salary Stats by Country
 ```
-GET /salary_metrics/by_country?country=India
+GET /api/v1/salary_metrics/by_country/India
 
 Response:
 {
   "country": "India",
-  "min_salary": 50000,
-  "max_salary": 150000,
-  "average_salary": 95000
+  "minimum_salary": 50000.0,
+  "maximum_salary": 150000.0,
+  "average_salary": 95000.0
 }
 ```
 
 #### Get Average Salary by Job Title
 ```
-GET /salary_metrics/by_job_title?job_title=Software Engineer
+GET /api/v1/salary_metrics/by_job_title/Software%20Engineer
 
 Response:
 {
   "job_title": "Software Engineer",
-  "average_salary": 105000,
+  "average_salary": 105000.0,
   "employee_count": 5
 }
 ```
+
+**Note:** Both endpoints support case-insensitive matching. Returns 404 if no employees found.
 
 ## Running Tests
 
@@ -196,7 +203,8 @@ rspec
 ### Run specific test file:
 ```bash
 rspec spec/models/employee_spec.rb
-rspec spec/controllers/employees_controller_spec.rb
+rspec spec/controllers/api/v1/employees_controller_spec.rb
+rspec spec/controllers/api/v1/salary_metrics_controller_spec.rb
 ```
 
 ### Run with detailed output:
@@ -212,11 +220,31 @@ This project was developed with AI assistance to demonstrate modern software dev
 
 #### AI Tools Used:
 - **Claude Opus 4.6** via Claude Code (Anthropic's official CLI)
-  - Used for: Code scaffolding, test generation, boilerplate reduction
+  - Used for: Code scaffolding, test generation, implementation, and documentation
   - Rationale: Accelerate development while maintaining code quality and TDD discipline
 
+#### Where AI was Used:
+1. **Test Generation:** AI helped scaffold comprehensive RSpec tests following TDD red-green-refactor cycle
+2. **Controller Implementation:** Generated CRUD endpoints and salary metrics controllers with proper error handling
+3. **Service Objects:** Created SalaryCalculator service with country-specific tax logic
+4. **Documentation:** Drafted README with API examples and setup instructions
+5. **Refactoring:** Applied DRY principles and ensured consistent code style
+
+#### Development Approach:
+- Strict TDD workflow: Write failing tests → Implement minimal code → Refactor
+- All 48 tests passing with comprehensive coverage
+- Incremental commits showing red-green-refactor cycle
+- Case-insensitive query support for better UX
+- Clean separation of concerns (Models, Controllers, Services)
+
 ### Test Coverage:
-- Model validations and business logic
-- Controller actions and error handling
-- Service objects for salary calculations
-- Integration tests for complete workflows
+- **Models:** Employee validations and database constraints (6 examples)
+- **Controllers:** CRUD operations, error handling, edge cases (34 examples)
+- **Services:** Tax calculations for multiple countries (8 examples)
+- **All Tests Passing:** 48 examples, 0 failures
+
+### Architecture Decisions:
+- **Service Objects:** Extracted salary calculation logic into `SalaryCalculator` for reusability
+- **RESTful Routes:** Followed Rails conventions with namespaced API routes (`/api/v1/`)
+- **Database Queries:** Used case-insensitive SQL queries for flexible country/job title matching
+- **Error Handling:** Consistent JSON error responses with appropriate HTTP status codes
