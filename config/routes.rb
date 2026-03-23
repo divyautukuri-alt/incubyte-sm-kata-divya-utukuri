@@ -11,7 +11,11 @@ Rails.application.routes.draw do
   # API v1 routes
   namespace :api do
     namespace :v1 do
-      resources :employees, only: [:index, :show, :create, :update, :destroy]
+      resources :employees, only: [:index, :show, :create, :update, :destroy] do
+        member do
+          get :calculate_salary
+        end
+      end
     end
   end
 end

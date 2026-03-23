@@ -1,7 +1,7 @@
 module Api
   module V1
     class EmployeesController < ApplicationController
-      before_action :set_employee, only: [:show, :update, :destroy]
+      before_action :set_employee, only: [:show, :update, :destroy, :calculate_salary]
 
       # GET /api/v1/employees
       def index
@@ -38,6 +38,12 @@ module Api
       def destroy
         @employee.destroy
         head :no_content
+      end
+
+      # GET /api/v1/employees/:id/calculate_salary
+      def calculate_salary
+        result = SalaryCalculator.calculate(@employee)
+        render json: result
       end
 
       private
