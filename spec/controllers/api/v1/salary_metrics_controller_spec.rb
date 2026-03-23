@@ -75,5 +75,21 @@ RSpec.describe Api::V1::SalaryMetricsController, type: :controller do
       expect(json_response['average_salary']).to eq(120000.0)
       expect(json_response['employee_count']).to eq(1)
     end
+
+    it 'returns 404 when no employees found for the job title' do
+      get :by_job_title, params: { job_title: 'CEO' }
+
+      expect(response).to have_http_status(:not_found)
+      json_response = JSON.parse(response.body)
+      expect(json_response['error']).to eq('No employees found for job title: CEO')
+    end
+
+    it 'handles case-insensitive job titles' do
+      get :by_job_title, params: { job_title: 'developer' }
+
+      expect(response).to have_http_status(:success)
+      json_response = JSON.parse(response.body)
+      expect(json_response['job_title']).to eq('Developer')
+    end
   end
 end
